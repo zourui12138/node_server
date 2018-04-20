@@ -1,29 +1,43 @@
-const express = require('express');
+import express from 'express'
+import connection from '../config'
+// 文件上传
+import multiparty from 'multiparty'
+import fs from 'fs'
+
 const router = express.Router();
-const url = require('url');
-const querystring = require('querystring');
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
-    // 解析 url 参数
-    let params = url.parse(req.url, true).query;
-    console.log(params.name);
-    console.log(params.url);
-    res.render('index');
+router.get('/', (req, res) => res.render('index'));
+
+router.post('/api', (req, res) => {
+    // 解析 post 请求体 body
+    console.log(req.body);
+    connection.query('SELECT * FROM test ORDER BY name', function (error, results, fields) {
+        if (error) throw error;
+        res.json(results);
+    });
 });
 
-router.post('/api', function (req, res, next) {
-    // 定义了一个post变量，用于暂存请求体的信息
-    let post = '';
+router.post('/upload',(req,res) => {
+    // 文件路径
+    let uploadDir = './upload/';
+    // 解析一个文件上传
+    let form = new multiparty.Form();
+    //设置编辑
+    form.encoding = 'utf-8';
+    //设置文件存储路径
+    form.uploadDir = uploadDir;
+    //设置单文件大小限制
+    form.maxFilesSize = 2 * 1024 * 1024;
 
-    // 通过req的data事件监听函数，每当接受到请求体的数据，就累加到post变量中
-    req.on('data', (chunk) => post += chunk);
-
-    // 在end事件触发后，通过querystring.parse将post解析为真正的POST请求格式，然后向客户端返回。
-    req.on('end', () => {
-        post = querystring.parse(post);
-        console.log(post);
-        res.end(util.inspect(post));
+    form.parse(req, function(err, fields, files){
+        if(files) {
+            let data = files.file[0];
+            console.log(data);
+            //同步重命名文件名
+            fs.renameSync(data.path,uploadDir+data.originalFilename);
+            res.end('Received files');
+        }
     });
 });
 

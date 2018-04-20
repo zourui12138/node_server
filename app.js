@@ -1,14 +1,28 @@
-const createError = require('http-errors');
-const express = require('express');
-const ejs = require('ejs');
-const path = require('path');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
+// 作者：小丶张学友
+import createError from 'http-errors'
+import express from 'express'
+import ejs from 'ejs'
+import path from 'path'
+import cookieParser from 'cookie-parser'
+import logger from 'morgan'
+// node.js 中间件，用于处理 JSON, Raw, Text 和 URL 编码的数据。
+import bodyParser from 'body-parser'
 
-const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
+// 路由路径
+import indexRouter from './routes/index'
+import usersRouter from './routes/users'
 
 const app = express();
+
+import expressWs from 'express-ws'
+expressWs(app);
+console.log(app.ws);
+app.ws('/', function(ws, req) {
+    console.log(ws);
+    ws.on('message', function(msg) {
+        ws.send(msg);
+    });
+});
 
 // 设置引擎模版
 app.engine('html', ejs.__express);
@@ -17,22 +31,22 @@ app.set('view engine', 'html');
 app.set('views', path.join(__dirname, 'views'));
 
 // 控制台打印日志
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({extended: false}));
+//app.use(logger('dev'));
+// 解析 post 请求
+app.use(bodyParser.json());
+// 加载用于解析 cookie 的中间件
 app.use(cookieParser());
+// 调用express.static中间件，指定静态资源目录
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-    next(createError(404));
-});
+app.use((req, res, next) => next(createError(404)));
 
 // error handler
-app.use(function (err, req, res, next) {
+app.use((err, req, res, next) => {
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};

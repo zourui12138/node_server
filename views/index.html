@@ -3,8 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="./js/jquery-1.11.3.min.js"></script>
+    <script src="./js/axios.min.js"></script>
 </head>
 <body>
 <h1>我是index</h1>
+<input type="file" name="file" id="file">
+<button type="button" id="btn">提交</button>
+<script>
+    axios.post('/api',{id:789,user:'admin'})
+        .then((res)=>{
+            console.log(res);
+        });
+    let config = {headers: {'Content-Type': 'multipart/form-data'}};
+    $('#btn').click(function () {
+        let file = $('#file')[0].files[0];
+        console.log(file);
+        let data = new FormData();
+        data.append('file',file);
+        axios.post('/upload',data,config)
+            .then((res)=>{
+                console.log(res);
+            });
+    });
+    let ws = new WebSocket('ws://localhost:3000');
+    ws.onmessage=function(e){
+        console.log(e.data);
+    };
+    ws.onopen=function(){
+        console.log('_connect');
+        ws.send('data');
+    };
+</script>
 </body>
 </html>

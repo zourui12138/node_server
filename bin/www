@@ -4,9 +4,9 @@
  * Module dependencies.
  */
 
-const app = require('../app');
 const debug = require('debug')('node-server:server');
-const http = require('http');
+import app from '../app'
+import http from 'http'
 
 /**
  * Normalize a port into a number, string, or false.
