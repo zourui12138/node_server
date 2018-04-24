@@ -9,20 +9,10 @@ import logger from 'morgan'
 import bodyParser from 'body-parser'
 
 // 路由路径
-import indexRouter from './routes/index'
+import jobsRouter from './routes/jobs'
 import usersRouter from './routes/users'
 
 const app = express();
-
-import expressWs from 'express-ws'
-expressWs(app);
-console.log(app.ws);
-app.ws('/', function(ws, req) {
-    console.log(ws);
-    ws.on('message', function(msg) {
-        ws.send(msg);
-    });
-});
 
 // 设置引擎模版
 app.engine('html', ejs.__express);
@@ -39,7 +29,7 @@ app.use(cookieParser());
 // 调用express.static中间件，指定静态资源目录
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
+app.use('/jobs', jobsRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

@@ -3,11 +3,15 @@ import connection from '../config'
 // 文件上传
 import multiparty from 'multiparty'
 import fs from 'fs'
+// 分页查询
+import {pagination} from '../commonFun/pagination'
 
 const router = express.Router();
 
 /* GET home page. */
-router.get('/', (req, res) => res.render('index'));
+router.get('/getInfo', (req, res) => {
+    pagination(req,res);
+});
 
 router.post('/api', (req, res) => {
     // 解析 post 请求体 body
