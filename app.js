@@ -11,6 +11,7 @@ import bodyParser from 'body-parser'
 // 路由路径
 import jobsRouter from './routes/jobs'
 import usersRouter from './routes/users'
+import ueditorRouter from './routes/ueditor'
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(cookieParser());
 // 调用express.static中间件，指定静态资源目录
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use('/', ueditorRouter);
 app.use('/jobs', jobsRouter);
 app.use('/users', usersRouter);
 
